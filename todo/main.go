@@ -12,26 +12,25 @@ type task struct {
 	complete bool
 }
 
+var todolist []task
+
 func main() {
 
 	validcommands := []string{
 		"add", "complete", "delete", "help", "list", "quit",
 	}
 
-	var todolist []task
-
 	var command, taskname string
 
 	for command != "quit" {
 		fmt.Printf("\nEnter a command: ")
-		fmt.Scanln(&command)
+		scanner := bufio.NewScanner(os.Stdin)
+		if scanner.Scan() {
+			command = scanner.Text()
+		}
 
-		if command == "add" {
-			fmt.Printf("\nEnter the name of the task to add it to your to do list: ")
-			scanner := bufio.NewScanner(os.Stdin)
-			if scanner.Scan() {
-				taskname = scanner.Text()
-			}
+		if command[0:3] == "add" {
+			taskname = command[4:]
 
 			index := search(todolist, taskname)
 			if index != -1 {
