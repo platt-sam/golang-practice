@@ -20,17 +20,28 @@ func main() {
 		"add", "complete", "delete", "help", "list", "quit",
 	}
 
-	var command, taskname string
+	var command, input, taskname string
 
 	for command != "quit" {
 		fmt.Printf("\nEnter a command: ")
 		scanner := bufio.NewScanner(os.Stdin)
 		if scanner.Scan() {
-			command = scanner.Text()
+			input = scanner.Text()
+			tmp := strings.Split(input, " ")
+			command = tmp[0]
+			taskname = ""
+			if len(tmp) > 1 {
+				taskname = strings.Join(tmp[1:], " ")
+			}
 		}
 
-		if command[0:3] == "add" {
-			taskname = command[4:]
+		if command == "add" {
+			for taskname == "" {
+				fmt.Printf("\nEnter name of task")
+				if scanner.Scan() {
+					taskname = scanner.Text()
+				}
+			}
 
 			index := search(todolist, taskname)
 			if index != -1 {
@@ -41,25 +52,33 @@ func main() {
 
 			list()
 		} else if command == "complete" {
-			fmt.Printf("\nEnter the name of the task to complete it")
-			fmt.Scanln(&taskname)
+			for taskname == "" {
+				fmt.Printf("\nEnter name of task")
+				if scanner.Scan() {
+					taskname = scanner.Text()
+				}
+			}
 
 			index := search(todolist, taskname)
 			if index == -1 {
-				fmt.Printf("\nA task with the name %s was not found. Consider adding this task to your todo list or confirming the correct taskname", taskname)
+				fmt.Printf("\nA task with the name %s was not found. Consider adding this task to your todo list first or confirming the correct taskname", taskname)
 			} else {
 				todolist[index].complete = true
 			}
 			list()
 		} else if command == "delete" {
-			fmt.Printf("\nEnter the name of the task to delete it")
-			fmt.Scanln(&taskname)
+			for taskname == "" {
+				fmt.Printf("\nEnter name of task")
+				if scanner.Scan() {
+					taskname = scanner.Text()
+				}
+			}
 
 			index := search(todolist, taskname)
 			if index == -1 {
 				fmt.Printf("\nA task with the name %s was not found. Consider adding this task to your todo list or confirming the correct taskname", taskname)
 			} else {
-				delete(index)
+				todolist = delete(index)
 			}
 			list()
 		} else if command == "help" {
@@ -85,7 +104,7 @@ func list() {
 		} else {
 			status = " "
 		}
-		fmt.Printf("[%s] %s", status, x.name)
+		fmt.Printf("\n[%s] %s", status, x.name)
 	}
 }
 func add(t task) []task {
